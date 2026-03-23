@@ -13,6 +13,7 @@
 #include "MGP_2526.h"
 #include "Kismet/GameplayStatics.h"
 #include "ClashEnemy.h"
+#include "ClashManager.h"
 
 
 
@@ -184,6 +185,14 @@ void AMGP_2526Character::TryInitiateClash(const FInputActionValue& Value)
 	if (NearbyEnemy)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Clash initiated!"));
+
+		// Find the ClashManager in the world and start the clash
+		AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+		AClashManager* Manager = Cast<AClashManager>(FoundActor);
+		if (Manager)
+		{
+			Manager->StartClash();
+		}
 	}
 	else
 	{
