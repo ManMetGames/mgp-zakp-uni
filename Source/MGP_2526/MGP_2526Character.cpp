@@ -11,6 +11,11 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MGP_2526.h"
+#include "Kismet/GameplayStatics.h"
+#include "ClashEnemy.h"
+#include "ClashManager.h"
+
+
 
 AMGP_2526Character::AMGP_2526Character()
 {
@@ -50,6 +55,23 @@ AMGP_2526Character::AMGP_2526Character()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AMGP_2526Character::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			if (DefaultMappingContext) // load inputs
+			{
+				Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			}
+		}
+	}
+}
+
 void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
@@ -65,6 +87,11 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
+
+		if (InteractAction)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AMGP_2526Character::TryInitiateClash);
+		}
 	}
 	else
 	{
@@ -130,4 +157,45 @@ void AMGP_2526Character::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+AClashEnemy* AMGP_2526Character::FindNearbyEnemy()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AClashEnemy::StaticClass(), FoundActors);
+
+	for (AActor* Actor : FoundActors)
+	{
+		AClashEnemy* Enemy = Cast<AClashEnemy>(Actor); // locate Clash Enemy
+		if (Enemy && Enemy->bCanClash)// if enemy can clash
+		{
+			float Distance = FVector::Dist(GetActorLocation(), Enemy->GetActorLocation());
+			if (Distance <= Enemy->InteractionRange) // if enemy is in range to clash
+			{
+				return Enemy;
+			}
+		}
+	}
+	return nullptr;
+}
+
+void AMGP_2526Character::TryInitiateClash(const FInputActionValue& Value)
+{
+	AClashEnemy* NearbyEnemy = FindNearbyEnemy();
+	if (NearbyEnemy)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Clash initiated!"));
+
+		// Find the ClashManager in the world and start the clash
+		AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+		AClashManager* Manager = Cast<AClashManager>(FoundActor);
+		if (Manager)
+		{
+			Manager->StartClash();
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No enemy nearby to clash with."));
+	}
 }
