@@ -186,12 +186,14 @@ void AMGP_2526Character::TryInitiateClash(const FInputActionValue& Value)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Clash initiated!"));
 
+		NearbyEnemy->bCanClash = false; //prevent multiple clashes with same enemy
+
 		// Find the ClashManager in the world and start the clash
 		AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
 		AClashManager* Manager = Cast<AClashManager>(FoundActor);
 		if (Manager)
 		{
-			Manager->StartClash();
+			Manager->StartClash(NearbyEnemy);
 		}
 	}
 	else

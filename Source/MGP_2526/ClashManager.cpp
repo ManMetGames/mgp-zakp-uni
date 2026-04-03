@@ -1,4 +1,5 @@
 #include "ClashManager.h"
+#include "ClashEnemy.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -36,8 +37,12 @@ void AClashManager::Tick(float DeltaTime)
     }
 }
 
-void AClashManager::StartClash()
+void AClashManager::StartClash(AClashEnemy* Enemy)
 {
+    if (bClashActive) return; // prevents another clash starting if there is one already
+
+    CurrentEnemy = Enemy;
+
     if (!ClashWidgetClass) return;
 
     // create and show the widget
@@ -90,7 +95,12 @@ void AClashManager::OnPlayerInput(FKey KeyPressed)
         // spawn next key promt
         SpawnNewPrompt();
     }
-    // wrong key does nothing for now add penalty?
+    // wrong key
+    if (KeyPressed != CurrentPromptKey)
+    {
+        BarValue -= ReduceAmount;
+        BarValue = FMath::Clamp(BarValue, 0.0f, 1.0f);
+    }
 }
 
 void AClashManager::UpdateWidget()
@@ -113,6 +123,13 @@ void AClashManager::UpdateWidget()
 void AClashManager::EndClash(bool bPlayerWon)
 {
     bClashActive = false;
+
+    if (CurrentEnemy)
+    {
+        CurrentEnemy->bCanClash = true; //reset can clash back to true
+        CurrentEnemy = nullptr;
+    }
+
 
     // remove UI from screen when clash no longer active
     if (ClashWidget)

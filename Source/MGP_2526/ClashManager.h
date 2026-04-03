@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ClashEnemy.h"
 #include "ClashManager.generated.h"
 
 class UUserWidget;
@@ -32,8 +33,15 @@ public:
     UPROPERTY(EditAnywhere, Category = "Clash")
     float FillAmount = 0.2f;
 
+    // how much a correct button press fills the bar
+    UPROPERTY(EditAnywhere, Category = "Clash")
+    float ReduceAmount = 0.1f;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Clash") // allow blueprint to display bar value
+    float BarValue = 0.5f; // current bar value between 0 and 1
+
     // call this to kick off a clash
-    void StartClash();
+    void StartClash(AClashEnemy* Enemy);
 
     // call this when player presses a button during clash
     void OnPlayerInput(FKey KeyPressed);
@@ -42,8 +50,7 @@ private:
     // the actual widget instance
     UUserWidget* ClashWidget;
 
-    // current bar value between 0 and 1
-    float BarValue = 0.5f;
+    AClashEnemy* CurrentEnemy;
 
     // whether a clash is currently happening
     bool bClashActive = false;
