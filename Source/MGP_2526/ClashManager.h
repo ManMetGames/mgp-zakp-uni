@@ -40,6 +40,9 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Clash") // allow blueprint to display bar value
     float BarValue = 0.5f; // current bar value between 0 and 1
 
+    UPROPERTY(BlueprintReadOnly, Category = "Clash")
+    FKey CurrentPromptKey;// the current correct key the player needs to press
+
     // call this to kick off a clash
     void StartClash(AClashEnemy* Enemy);
 
@@ -54,9 +57,6 @@ private:
 
     // whether a clash is currently happening
     bool bClashActive = false;
-
-    // the current correct key the player needs to press
-    FKey CurrentPromptKey;
 
     // picks a new random button prompt
     void SpawnNewPrompt();

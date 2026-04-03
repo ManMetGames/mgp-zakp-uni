@@ -105,19 +105,7 @@ void AClashManager::OnPlayerInput(FKey KeyPressed)
 
 void AClashManager::UpdateWidget()
 {
-    if (!ClashWidget) return;
-
-    // update the progress bar
-    if (UProgressBar* Bar = Cast<UProgressBar>(ClashWidget->GetWidgetFromName(TEXT("ClashBar"))))
-    {
-        Bar->SetPercent(BarValue);
-    }
-
-    // update the button prompt text
-    if (UTextBlock* Text = Cast<UTextBlock>(ClashWidget->GetWidgetFromName(TEXT("ButtonPromptText"))))
-    {
-        Text->SetText(FText::FromString(CurrentPromptKey.GetDisplayName().ToString()));
-    }
+    // ui to be handled via the blueprints 
 }
 
 void AClashManager::EndClash(bool bPlayerWon)
