@@ -88,10 +88,9 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
 
-		if (InteractAction)
-		{
-			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AMGP_2526Character::TryInitiateClash);
-		}
+		
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AMGP_2526Character::TryInitiateClash);
+		
 	}
 	else
 	{
@@ -191,10 +190,7 @@ void AMGP_2526Character::TryInitiateClash(const FInputActionValue& Value)
 		// Find the ClashManager in the world and start the clash
 		AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
 		AClashManager* Manager = Cast<AClashManager>(FoundActor);
-		if (Manager)
-		{
-			Manager->StartClash(NearbyEnemy);
-		}
+		Manager->StartClash(NearbyEnemy);
 	}
 	else
 	{

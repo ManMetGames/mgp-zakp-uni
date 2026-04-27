@@ -55,6 +55,7 @@ private:
 
     AClashEnemy* CurrentEnemy;
 
+
     // whether a clash is currently happening
     bool bClashActive = false;
 

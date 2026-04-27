@@ -27,7 +27,7 @@ void AMGP_2526PlayerController::BeginPlay()
 		} else {
 
 			UE_LOG(LogMGP_2526, Error, TEXT("Could not spawn mobile controls widget."));
-
+			 
 		}
 
 	}

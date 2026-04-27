@@ -79,6 +79,7 @@ void AClashManager::OnPlayerInput(FKey KeyPressed)
 {
     if (!bClashActive) return;
 
+
     if (KeyPressed == CurrentPromptKey)
     {
         // if correct key — fill the bar by the fill amount
