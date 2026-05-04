@@ -57,9 +57,31 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* InteractAction;
 
+	// Inputs for clash
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashInput;
+
 	// Mapping context to register input
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyQ;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyW;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyE;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyR;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyF;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyG;
 
 public:
 
@@ -83,7 +105,15 @@ protected:
 
 	// Clash function
 	void TryInitiateClash(const FInputActionValue& Value);
+	
 	AClashEnemy* FindNearbyEnemy();
+
+	void PressQ(const FInputActionValue& Value);
+	void PressW(const FInputActionValue& Value);
+	void PressE(const FInputActionValue& Value);
+	void PressR(const FInputActionValue& Value);
+	void PressF(const FInputActionValue& Value);
+	void PressG(const FInputActionValue& Value);
 
 public:
 

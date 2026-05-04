@@ -47,7 +47,7 @@ public:
     void StartClash(AClashEnemy* Enemy);
 
     // call this when player presses a button during clash
-    void OnPlayerInput(FKey KeyPressed);
+    void OnPlayerInput(FKey KeyPressed); 
 
 private:
     // the actual widget instance
