@@ -209,46 +209,77 @@ void AMGP_2526Character::TryInitiateClash(const FInputActionValue& Value)
 	}
 }
 
+void AMGP_2526Character::SetClashInputMode(bool bClashActive)
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (!PlayerController) return;
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (!Subsystem) return;
+
+	if (bClashActive)
+	{
+		// Switch to clash input context
+		Subsystem->RemoveMappingContext(DefaultMappingContext);
+		Subsystem->AddMappingContext(ClashMappingContext, 0);
+	}
+	else
+	{
+		// Switch back to default input context
+		Subsystem->RemoveMappingContext(ClashMappingContext);
+		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	}
+}
+
+
+
 
 //list of each key method when player inputs
 void AMGP_2526Character::PressQ(const FInputActionValue& Value)
 {
 	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
 	AClashManager* Manager = Cast<AClashManager>(FoundActor);
-	if (Manager) Manager->OnPlayerInput(EKeys::Q);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::Q);
 }
 
 void AMGP_2526Character::PressW(const FInputActionValue& Value)
 {
 	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
 	AClashManager* Manager = Cast<AClashManager>(FoundActor);
-	if (Manager) Manager->OnPlayerInput(EKeys::W);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::W);
 }
 
 void AMGP_2526Character::PressE(const FInputActionValue& Value)
 {
 	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
 	AClashManager* Manager = Cast<AClashManager>(FoundActor);
-	if (Manager) Manager->OnPlayerInput(EKeys::E);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::E);
 }
 
 void AMGP_2526Character::PressR(const FInputActionValue& Value)
 {
 	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
 	AClashManager* Manager = Cast<AClashManager>(FoundActor);
-	if (Manager) Manager->OnPlayerInput(EKeys::R);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::R);
 }
 
 void AMGP_2526Character::PressF(const FInputActionValue& Value)
 {
 	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
 	AClashManager* Manager = Cast<AClashManager>(FoundActor);
-	if (Manager) Manager->OnPlayerInput(EKeys::F);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::F);
 }
 
 void AMGP_2526Character::PressG(const FInputActionValue& Value)
 {
 	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
 	AClashManager* Manager = Cast<AClashManager>(FoundActor);
-	if (Manager) Manager->OnPlayerInput(EKeys::G);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::G);
 }

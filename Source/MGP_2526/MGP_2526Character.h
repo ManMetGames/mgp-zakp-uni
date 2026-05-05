@@ -57,14 +57,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* InteractAction;
 
-	// Inputs for clash
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* ClashInput;
-
 	// Mapping context to register input
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
 
+	// Mapping context to register clash inputs
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputMappingContext* ClashMappingContext;
+
+
+	// Inputs for all different clash buttons
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* ClashKeyQ;
 
@@ -108,6 +110,7 @@ protected:
 	
 	AClashEnemy* FindNearbyEnemy();
 
+	// Functions for handling the seperate clash buttons
 	void PressQ(const FInputActionValue& Value);
 	void PressW(const FInputActionValue& Value);
 	void PressE(const FInputActionValue& Value);
@@ -132,6 +135,9 @@ public:
 	/** Handles jump pressed inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	// function for changing input mapping context to clash inputs
+	void SetClashInputMode(bool bClashActive);
 
 public:
 

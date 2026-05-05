@@ -1,5 +1,6 @@
 #include "ClashManager.h"
 #include "ClashEnemy.h"
+#include "MGP_2526Character.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -41,6 +42,15 @@ void AClashManager::StartClash(AClashEnemy* Enemy)
 {
     if (bClashActive) return; // prevents another clash starting if there is one already
 
+    AMGP_2526Character* Player = Cast<AMGP_2526Character>(
+        GetWorld()->GetFirstPlayerController()->GetPawn());
+    if (Player)
+    {
+        // call ClashInputMode function from character to switch to clash inputs (prevents movement)
+        Player->SetClashInputMode(true);
+    }
+    
+
     CurrentEnemy = Enemy;
 
     if (!ClashWidgetClass) return;
@@ -79,6 +89,15 @@ void AClashManager::OnPlayerInput(FKey KeyPressed)
 {
     if (!bClashActive) return;
 
+    UE_LOG(LogTemp, Warning, TEXT("Key pressed: %s"), *KeyPressed.GetDisplayName().ToString());
+    UE_LOG(LogTemp, Warning, TEXT("Current prompt: %s"), *CurrentPromptKey.GetDisplayName().ToString());
+
+    if (!bClashActive)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Clash not active!"));
+        return;
+    }
+
 
     if (KeyPressed == CurrentPromptKey)
     {
@@ -112,6 +131,14 @@ void AClashManager::UpdateWidget()
 void AClashManager::EndClash(bool bPlayerWon)
 {
     bClashActive = false;
+
+    AMGP_2526Character* Player = Cast<AMGP_2526Character>(
+        GetWorld()->GetFirstPlayerController()->GetPawn());
+    if (Player)
+    {
+        // call ClashInputMode function from character to switch to default inputs (renables movement)
+        Player->SetClashInputMode(false);
+    }
 
     if (CurrentEnemy)
     {

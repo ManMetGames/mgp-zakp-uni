@@ -27,13 +27,13 @@ public:
 
     // how fast the bar decays per second
     UPROPERTY(EditAnywhere, Category = "Clash")
-    float DecayRate = 0.1f;
+    float DecayRate = 0.3f;
 
     // how much a correct button press fills the bar
     UPROPERTY(EditAnywhere, Category = "Clash")
     float FillAmount = 0.2f;
 
-    // how much a correct button press fills the bar
+    // how much a incorrect button reduces the bar
     UPROPERTY(EditAnywhere, Category = "Clash")
     float ReduceAmount = 0.1f;
 
