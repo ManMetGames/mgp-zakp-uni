@@ -11,6 +11,12 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MGP_2526.h"
+#include "Kismet/GameplayStatics.h"
+#include "ClashEnemy.h"
+#include "ClashManager.h"
+#include "InputActionValue.h"
+
+
 
 AMGP_2526Character::AMGP_2526Character()
 {
@@ -50,6 +56,23 @@ AMGP_2526Character::AMGP_2526Character()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AMGP_2526Character::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			if (DefaultMappingContext) // load inputs
+			{
+				Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			}
+		}
+	}
+}
+
 void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
@@ -65,6 +88,19 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
+
+		
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AMGP_2526Character::TryInitiateClash);
+
+		//Indiviual bindings for each key
+		EnhancedInputComponent->BindAction(ClashKeyQ, ETriggerEvent::Started, this, &AMGP_2526Character::PressQ);
+		EnhancedInputComponent->BindAction(ClashKeyW, ETriggerEvent::Started, this, &AMGP_2526Character::PressW);
+		EnhancedInputComponent->BindAction(ClashKeyE, ETriggerEvent::Started, this, &AMGP_2526Character::PressE);
+		EnhancedInputComponent->BindAction(ClashKeyR, ETriggerEvent::Started, this, &AMGP_2526Character::PressR);
+		EnhancedInputComponent->BindAction(ClashKeyF, ETriggerEvent::Started, this, &AMGP_2526Character::PressF);
+		EnhancedInputComponent->BindAction(ClashKeyG, ETriggerEvent::Started, this, &AMGP_2526Character::PressG);
+
+		
 	}
 	else
 	{
@@ -130,4 +166,120 @@ void AMGP_2526Character::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+AClashEnemy* AMGP_2526Character::FindNearbyEnemy()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AClashEnemy::StaticClass(), FoundActors);
+
+	for (AActor* Actor : FoundActors)
+	{
+		AClashEnemy* Enemy = Cast<AClashEnemy>(Actor); // locate Clash Enemy
+		if (Enemy && Enemy->bCanClash)// if enemy can clash
+		{
+			float Distance = FVector::Dist(GetActorLocation(), Enemy->GetActorLocation());
+			if (Distance <= Enemy->InteractionRange) // if enemy is in range to clash
+			{
+				return Enemy;
+			}
+		}
+	}
+	return nullptr;
+}
+
+void AMGP_2526Character::TryInitiateClash(const FInputActionValue& Value)
+{
+	AClashEnemy* NearbyEnemy = FindNearbyEnemy();
+	if (NearbyEnemy)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Clash initiated!"));
+
+		NearbyEnemy->bCanClash = false; //prevent multiple clashes with same enemy
+
+		// Find the ClashManager in the world and start the clash
+		AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+		AClashManager* Manager = Cast<AClashManager>(FoundActor);
+		Manager->StartClash(NearbyEnemy);
+		
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No enemy nearby to clash with."));
+	}
+}
+
+void AMGP_2526Character::SetClashInputMode(bool bClashActive)
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (!PlayerController) return;
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (!Subsystem) return;
+
+	if (bClashActive)
+	{
+		// Switch to clash input context
+		Subsystem->RemoveMappingContext(DefaultMappingContext);
+		Subsystem->AddMappingContext(ClashMappingContext, 0);
+	}
+	else
+	{
+		// Switch back to default input context
+		Subsystem->RemoveMappingContext(ClashMappingContext);
+		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	}
+}
+
+
+
+
+//list of each key method when player inputs
+void AMGP_2526Character::PressQ(const FInputActionValue& Value)
+{
+	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+	AClashManager* Manager = Cast<AClashManager>(FoundActor);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::Q);
+}
+
+void AMGP_2526Character::PressW(const FInputActionValue& Value)
+{
+	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+	AClashManager* Manager = Cast<AClashManager>(FoundActor);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::W);
+}
+
+void AMGP_2526Character::PressE(const FInputActionValue& Value)
+{
+	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+	AClashManager* Manager = Cast<AClashManager>(FoundActor);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::E);
+}
+
+void AMGP_2526Character::PressR(const FInputActionValue& Value)
+{
+	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+	AClashManager* Manager = Cast<AClashManager>(FoundActor);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::R);
+}
+
+void AMGP_2526Character::PressF(const FInputActionValue& Value)
+{
+	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+	AClashManager* Manager = Cast<AClashManager>(FoundActor);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::F);
+}
+
+void AMGP_2526Character::PressG(const FInputActionValue& Value)
+{
+	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AClashManager::StaticClass());
+	AClashManager* Manager = Cast<AClashManager>(FoundActor);
+	if (Manager) 
+		Manager->OnPlayerInput(EKeys::G);
 }

@@ -5,11 +5,15 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "InputActionValue.h"
 #include "MGP_2526Character.generated.h"
+
 
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UInputMappingContext;
+class AClashEnemy;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -49,6 +53,38 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	// Interact action
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* InteractAction;
+
+	// Mapping context to register input
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputMappingContext* DefaultMappingContext;
+
+	// Mapping context to register clash inputs
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputMappingContext* ClashMappingContext;
+
+
+	// Inputs for all different clash buttons
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyQ;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyW;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyE;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyR;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyF;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ClashKeyG;
+
 public:
 
 	/** Constructor */
@@ -59,6 +95,8 @@ protected:
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void BeginPlay() override;
+
 protected:
 
 	/** Called for movement input */
@@ -66,6 +104,19 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	// Clash function
+	void TryInitiateClash(const FInputActionValue& Value);
+	
+	AClashEnemy* FindNearbyEnemy();
+
+	// Functions for handling the seperate clash buttons
+	void PressQ(const FInputActionValue& Value);
+	void PressW(const FInputActionValue& Value);
+	void PressE(const FInputActionValue& Value);
+	void PressR(const FInputActionValue& Value);
+	void PressF(const FInputActionValue& Value);
+	void PressG(const FInputActionValue& Value);
 
 public:
 
@@ -84,6 +135,9 @@ public:
 	/** Handles jump pressed inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	// function for changing input mapping context to clash inputs
+	void SetClashInputMode(bool bClashActive);
 
 public:
 
